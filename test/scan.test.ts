@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -166,6 +166,23 @@ describe("scan", () => {
     expect(sarif.version).toBe("2.1.0");
     expect(sarif.runs[0].results.length).toBe(result.findings.length);
     expect(sarif.runs[0].results[0].locations[0].physicalLocation.region.startLine).toBeGreaterThan(0);
+  });
+
+  it("does not follow symlinks out of the scan root", async () => {
+    const outside = repo({ "secret.ts": `const a = "${AADHAAR}";\n` });
+    const root = repo({ "src/ok.ts": "export {};\n" });
+    symlinkSync(join(outside, "secret.ts"), join(root, "src/link.ts"));
+    const result = await scan({ root, ai: "off" });
+    expect(result.findings).toEqual([]);
+    expect(result.filesScanned).toBe(1);
+  });
+
+  it("strips terminal control characters from pretty output", async () => {
+    const result = await scan({ root: repo(files), ai: "off" });
+    result.findings[0]!.ai = { verdict: "uncertain", confidence: 0.5, explanation: "x\u001b[2Jy", fix: "a\u001b]0;t\u0007b" };
+    result.findings[0]!.path = "src/\u001b[31mapp.ts";
+    const text = render(result, "pretty");
+    expect(text).not.toMatch(/[\u001b\u0007]/);
   });
 
   it("escapes repository text in the HTML report", async () => {

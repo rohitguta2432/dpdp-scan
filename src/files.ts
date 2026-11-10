@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, lstatSync, readdirSync, readFileSync, realpathSync } from "node:fs";
+import { join, sep } from "node:path";
 import type { SourceFile } from "./types.js";
 
 const SKIP_DIRS = new Set([
@@ -45,7 +45,9 @@ export function loadIgnoreFile(root: string): string[] {
 
 function gitFiles(root: string): string[] | null {
   try {
-    const out = execFileSync("git", ["-C", root, "ls-files", "-co", "--exclude-standard", "-z"], {
+    // The scanned repository is untrusted: disable config keys that make git run external commands.
+    const safe = ["-c", "core.fsmonitor=false", "-c", "core.hooksPath=/dev/null", "-c", "core.pager=cat"];
+    const out = execFileSync("git", [...safe, "-C", root, "ls-files", "-co", "--exclude-standard", "-z"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
       maxBuffer: 256 * 1024 * 1024,
@@ -73,6 +75,12 @@ export function readSourceFiles(root: string, excludes: string[]): SourceFile[] 
   const matchers = excludes.map(globToMatcher);
   const candidates = gitFiles(root) ?? walk(root);
   const files: SourceFile[] = [];
+  let realRoot: string;
+  try {
+    realRoot = realpathSync(root);
+  } catch {
+    return files;
+  }
   for (const path of candidates.sort()) {
     if (path.split("/").some((part) => SKIP_DIRS.has(part))) continue;
     if (SKIP_FILES.test(path) || SKIP_EXTENSIONS.test(path)) continue;
@@ -80,8 +88,11 @@ export function readSourceFiles(root: string, excludes: string[]): SourceFile[] 
     const absolute = join(root, path);
     let buffer: Buffer;
     try {
-      const stat = statSync(absolute);
+      // Never follow symlinks: a link could point outside the scan root.
+      const stat = lstatSync(absolute);
       if (!stat.isFile() || stat.size > MAX_BYTES) continue;
+      const real = realpathSync(absolute);
+      if (real !== realRoot && !real.startsWith(realRoot + sep)) continue;
       buffer = readFileSync(absolute);
     } catch {
       continue;

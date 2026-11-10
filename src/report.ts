@@ -14,16 +14,19 @@ export function countBySeverity(findings: Finding[]): Record<Severity, number> {
 function pretty(result: ScanResult, color: boolean): string {
   const paint = (code: number, text: string) => (color ? `\u001b[${code}m${text}\u001b[0m` : text);
   const severityColor: Record<Severity, number> = { high: 31, medium: 33, low: 36 };
+  // Paths, field names, and AI text come from the scanned repository: strip control characters
+  // so they cannot inject terminal escape sequences.
+  const clean = (text: string) => text.replace(/[\u0000-\u0009\u000b-\u001f\u007f-\u009f]/g, "");
   const lines: string[] = [];
   for (const f of result.findings) {
     const rule = RULES[f.ruleId]!;
     lines.push(
-      `${paint(severityColor[f.severity], f.severity.toUpperCase().padEnd(6))} ${paint(1, f.ruleId)}  ${f.path}:${f.line}`,
-      `       ${f.message}  ${paint(2, `[${rule.citation}]`)}`,
+      `${paint(severityColor[f.severity], f.severity.toUpperCase().padEnd(6))} ${paint(1, f.ruleId)}  ${clean(f.path).replace(/\n/g, "")}:${f.line}`,
+      `       ${clean(f.message).replace(/\n/g, " ")}  ${paint(2, `[${rule.citation}]`)}`,
     );
     if (f.ai) {
-      lines.push(`       ${paint(35, `AI ${f.ai.verdict.replace("_", " ")} (${Math.round(f.ai.confidence * 100)}%)`)}: ${f.ai.explanation}`);
-      if (f.ai.fix) lines.push(`       ${paint(32, "fix")}: ${f.ai.fix.split("\n").join("\n            ")}`);
+      lines.push(`       ${paint(35, `AI ${f.ai.verdict.replace("_", " ")} (${Math.round(f.ai.confidence * 100)}%)`)}: ${clean(f.ai.explanation).replace(/\n/g, " ")}`);
+      if (f.ai.fix) lines.push(`       ${paint(32, "fix")}: ${clean(f.ai.fix).split("\n").join("\n            ")}`);
     }
     lines.push("");
   }
