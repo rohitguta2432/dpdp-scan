@@ -4,7 +4,7 @@ AI-enabled scanner that finds Indian personal data in a codebase and maps the ga
 
 It answers the first question of any DPDP programme: what personal data do we hold, where is it, and where is it leaking? Core obligations under the DPDP Rules, 2025 apply from 13 May 2027.
 
-![15 second demo](docs/demo.mp4)
+[Watch the 15 second demo](docs/demo.mp4) · [Sample HTML report](docs/demo-report.html)
 
 ```
 HIGH   DPDP003  db/001_init.sql:7
