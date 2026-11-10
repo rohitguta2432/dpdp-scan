@@ -1,0 +1,3 @@
+# Scanning this repository skips the demo app and tests, which hold synthetic identifiers on purpose.
+examples/
+test/

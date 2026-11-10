@@ -1,0 +1,38 @@
+{
+  "name": "dpdp-scan",
+  "version": "0.1.0",
+  "description": "AI-enabled scanner that finds Indian personal data in a codebase and maps the gaps to India's DPDP Act.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "dpdp-scan": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "scan:example": "node dist/cli.js examples/leaky-app --no-ignore-file --ai off"
+  },
+  "keywords": [
+    "dpdp",
+    "privacy",
+    "india",
+    "aadhaar",
+    "pan",
+    "compliance",
+    "sarif",
+    "static-analysis"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

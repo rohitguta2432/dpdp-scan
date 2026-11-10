@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dpdp-scan report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{--paper:#f6f1e7;--card:#fffdf8;--ink:#1d1a16;--muted:#6f675c;--line:#e2d9c8;--ok:#1f7a4d;--high:#b3261e;--medium:#a15c00;--low:#2c5d8f;--accent:#e4572e}
+@media (prefers-color-scheme:dark){:root{--paper:#16140f;--card:#1f1c16;--ink:#f1eadb;--muted:#a59b8a;--line:#35302699;--ok:#5fd39a;--high:#ff8a80;--medium:#f2b25c;--low:#8fc1f2;--accent:#ff7a52}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+code,pre,.loc,.tag{font-family:"JetBrains Mono",ui-monospace,monospace}
+main{max-width:980px;margin:0 auto;padding:32px 16px 80px}
+h1{font-size:clamp(32px,6vw,56px);line-height:1;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
+h1 span{color:var(--accent)}
+h2{font-size:24px;margin:48px 0 12px}
+h3{font-size:18px;margin:0 0 4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:14px;margin:0 0 8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:24px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat b{display:block;font-size:34px;line-height:1.1;font-weight:800}
+.stat span{color:var(--muted);font-size:13px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px}
+.chip{font:inherit;font-size:14px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;transition:transform .15s}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;animation:rise .45s both;animation-delay:calc(var(--i)*45ms)}
+.card[hidden]{display:none}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+summary{cursor:pointer;padding:12px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;list-style:none;border-radius:14px}
+summary::-webkit-details-marker{display:none}
+.msg{font-weight:600}
+.loc{grid-column:2;color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.sev{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:2px 10px;border-radius:999px;border:1.5px solid currentColor}
+.sev-high{color:var(--high)}.sev-medium{color:var(--medium)}.sev-low{color:var(--low)}
+.body{padding:0 16px 14px;border-top:1px dashed var(--line);animation:fade .25s both}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 6px;white-space:nowrap}
+.tag.ok,.ai-false_positive{color:var(--ok)}.tag.warn,.ai-true_positive{color:var(--high)}
+.fix{position:relative;margin-top:8px}
+pre{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 96px 12px 12px;overflow-x:auto;font-size:13px;white-space:pre-wrap}
+.copy{position:absolute;top:8px;right:8px;font:600 12px "JetBrains Mono",monospace;color:var(--paper);background:var(--ink);border:0;border-radius:8px;padding:6px 10px;cursor:pointer;transition:transform .15s}
+.copy:active{transform:scale(.94)}
+.copy.done{background:var(--ok)}
+.table{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+footer{margin-top:48px;color:var(--muted);font-size:13px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>dpdp<span>-scan</span></h1>
+  <p class="muted">4 files scanned · AI review by qwen3:14b (local) · Findings are pointers for review, not a compliance determination.</p>
+  <div class="stats">
+    <div class="stat"><b data-count="8" style="color:var(--high)">8</b><span>high</span></div>
+    <div class="stat"><b data-count="9" style="color:var(--medium)">9</b><span>medium</span></div>
+    <div class="stat"><b data-count="2" style="color:var(--low)">2</b><span>low</span></div>
+    <div class="stat"><b data-count="13">13</b><span>personal data columns</span></div>
+    <div class="stat"><b data-count="2">2</b><span>third parties</span></div>
+  </div>
+
+  <h2 id="findings">Findings</h2>
+  <div class="chips" role="group" aria-label="Filter findings by severity">
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">All <b data-count="19">19</b></button><button type="button" class="chip" data-filter="high" aria-pressed="false">High <b data-count="8">8</b></button><button type="button" class="chip" data-filter="medium" aria-pressed="false">Medium <b data-count="9">9</b></button><button type="button" class="chip" data-filter="low" aria-pressed="false">Low <b data-count="2">2</b></button>
+  </div>
+  <ul id="list">
+<li class="card" data-severity="high" style="--i:0">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">Aadhaar column `users.aadhaar_number` has no visible encryption, hashing, or masking</span>
+      <span class="loc">db/001_init.sql:7</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP003</span> <span class="tag">Act s.8(5); Rules r.6</span> No encryption, hashing, masking, or tokenisation is visible for this column. Encrypt it at the field level or store a token, and keep only the last four characters where display is needed.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The Aadhaar number is high-risk personal data under the DPDP Act, and it is stored in plaintext without encryption, hashing, or masking.</p><div class="fix"><pre><code>Encrypt the `aadhaar_number` column before storing it in the database. Example fix:</code></pre><button type="button" class="copy" data-copy="Encrypt the `aadhaar_number` column before storing it in the database. Example fix:">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="high" style="--i:1">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">PAN (`pan`) passed to a log call</span>
+      <span class="loc">src/gesture.ts:3</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP002</span> <span class="tag">Act s.8(5); Rules r.6</span> Logs are widely readable and retained for long periods. Mask or drop the field before logging, or log a stable internal ID instead.</p>
+      <p class="ai"><span class="tag ai-false_positive">AI: false positive · 95%</span> The variable `pan` refers to a map gesture (as indicated by the comment), not a PAN (Permanent Account Number). The code is logging gesture data, not personal data.</p><div class="fix"><pre><code>No code change needed. The comment clarifies that `pan` is not a PAN.</code></pre><button type="button" class="copy" data-copy="No code change needed. The comment clarifies that `pan` is not a PAN.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="high" style="--i:2">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">Aadhaar number written in source</span>
+      <span class="loc">src/kyc.ts:5</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP001</span> <span class="tag">Act s.8(5); Rules r.6</span> Real identifiers committed to a repository are exposed to everyone with read access and stay in git history. Remove the value, rotate or purge history if it is real, and use synthetic data in tests.</p>
+      <p class="ai"><span class="tag ai-false_positive">AI: false positive · 100%</span> The value is clearly synthetic test data, indicated by the comment and the use of placeholder values like &lt;AADHAAR&gt;.</p><div class="fix"><pre><code>No code change needed. The use of placeholder values for demonstration purposes is acceptable as long as they are not real personal data.</code></pre><button type="button" class="copy" data-copy="No code change needed. The use of placeholder values for demonstration purposes is acceptable as long as they are not real personal data.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="high" style="--i:3">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">PAN written in source</span>
+      <span class="loc">src/kyc.ts:6</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP001</span> <span class="tag">Act s.8(5); Rules r.6</span> Real identifiers committed to a repository are exposed to everyone with read access and stay in git history. Remove the value, rotate or purge history if it is real, and use synthetic data in tests.</p>
+      <p class="ai"><span class="tag ai-false_positive">AI: false positive · 100%</span> The value is clearly synthetic test data as indicated by the comment &#39;Synthetic sample values, checksum-valid so the detectors fire.&#39;</p><div class="fix"><pre><code>No code change needed. The use of synthetic test data is acceptable for demonstration purposes.</code></pre><button type="button" class="copy" data-copy="No code change needed. The use of synthetic test data is acceptable for demonstration purposes.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="high" style="--i:4">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">GSTIN written in source</span>
+      <span class="loc">src/kyc.ts:7</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP001</span> <span class="tag">Act s.8(5); Rules r.6</span> Real identifiers committed to a repository are exposed to everyone with read access and stay in git history. Remove the value, rotate or purge history if it is real, and use synthetic data in tests.</p>
+      <p class="ai"><span class="tag ai-false_positive">AI: false positive · 90%</span> The value is clearly synthetic test data as indicated by the comment and the use of placeholder syntax (&lt;GSTIN&gt;).</p><div class="fix"><pre><code>No code change needed. The use of placeholder values for demonstration purposes is acceptable as long as they are not real personal data.</code></pre><button type="button" class="copy" data-copy="No code change needed. The use of placeholder values for demonstration purposes is acceptable as long as they are not real personal data.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="high" style="--i:5">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">UPI ID written in source</span>
+      <span class="loc">src/kyc.ts:8</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP001</span> <span class="tag">Act s.8(5); Rules r.6</span> Real identifiers committed to a repository are exposed to everyone with read access and stay in git history. Remove the value, rotate or purge history if it is real, and use synthetic data in tests.</p>
+      <p class="ai"><span class="tag ai-false_positive">AI: false positive · 90%</span> The value is clearly synthetic test data, as indicated by the comment &#39;Synthetic sample values, checksum-valid so the detectors fire.&#39;</p><div class="fix"><pre><code>No code change needed. The value is synthetic and used for testing purposes only.</code></pre><button type="button" class="copy" data-copy="No code change needed. The value is synthetic and used for testing purposes only.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="high" style="--i:6">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">Aadhaar (`aadhaarNumber`) passed to a log call</span>
+      <span class="loc">src/kyc.ts:11</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP002</span> <span class="tag">Act s.8(5); Rules r.6</span> Logs are widely readable and retained for long periods. Mask or drop the field before logging, or log a stable internal ID instead.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The Aadhaar number is being logged in a logger.info call, which violates DPDP Act provisions against logging personal data.</p><div class="fix"><pre><code>Avoid logging personal data like Aadhaar numbers. Replace with a sanitized or masked value if logging is required.
+
+Changed line:
+11:   logger.info(`KYC started for ${userId} aadhaar=***`);</code></pre><button type="button" class="copy" data-copy="Avoid logging personal data like Aadhaar numbers. Replace with a sanitized or masked value if logging is required.
+
+Changed line:
+11:   logger.info(`KYC started for ${userId} aadhaar=***`);">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="high" style="--i:7">
+  <details>
+    <summary>
+      <span class="sev sev-high">high</span>
+      <span class="msg">PAN (`panNumber`) passed to a log call</span>
+      <span class="loc">src/kyc.ts:13</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP002</span> <span class="tag">Act s.8(5); Rules r.6</span> Logs are widely readable and retained for long periods. Mask or drop the field before logging, or log a stable internal ID instead.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 100%</span> The PAN number is a sensitive personal data field under the DPDP Act, and logging it directly to the console violates privacy rules.</p><div class="fix"><pre><code>Avoid logging personal data such as PAN numbers. Replace with a masked or redacted value if logging is required.
+
+Changed line:
+13:   console.log(&quot;verifying&quot;, user.phone, &quot;***&quot;);</code></pre><button type="button" class="copy" data-copy="Avoid logging personal data such as PAN numbers. Replace with a masked or redacted value if logging is required.
+
+Changed line:
+13:   console.log(&quot;verifying&quot;, user.phone, &quot;***&quot;);">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:8">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">government ID column `kyc_documents.passport` has no visible encryption, hashing, or masking</span>
+      <span class="loc">db/001_init.sql:16</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP003</span> <span class="tag">Act s.8(5); Rules r.6</span> No encryption, hashing, masking, or tokenisation is visible for this column. Encrypt it at the field level or store a token, and keep only the last four characters where display is needed.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The `passport` field stores high-risk personal data (as defined under DPDP Act, 2023) without any encryption, hashing, or masking, violating DPDP Rule 6.</p><div class="fix"><pre><code>Apply encryption or masking to the `passport` field before storing it in the database.
+
+Example fix (using PostgreSQL&#39;s `pgcrypto` for encryption):
+
+ALTER TABLE kyc_documents ADD COLUMN encrypted_passport BYTEA;
+UPDATE kyc_documents SET encrypted_passport = pgp_sym_encrypt(passport, &#39;encryption_key&#39;);
+ALTER TABLE kyc_documents DROP COLUMN passport;</code></pre><button type="button" class="copy" data-copy="Apply encryption or masking to the `passport` field before storing it in the database.
+
+Example fix (using PostgreSQL&#39;s `pgcrypto` for encryption):
+
+ALTER TABLE kyc_documents ADD COLUMN encrypted_passport BYTEA;
+UPDATE kyc_documents SET encrypted_passport = pgp_sym_encrypt(passport, &#39;encryption_key&#39;);
+ALTER TABLE kyc_documents DROP COLUMN passport;">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:9">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">bank or UPI detail column `kyc_documents.bank_account` has no visible encryption, hashing, or masking</span>
+      <span class="loc">db/001_init.sql:17</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP003</span> <span class="tag">Act s.8(5); Rules r.6</span> No encryption, hashing, masking, or tokenisation is visible for this column. Encrypt it at the field level or store a token, and keep only the last four characters where display is needed.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The `bank_account` field stores high-risk personal data (financial information) without any encryption, hashing, or masking, violating DPDP Act Section 8(5) and Rules 6.</p><div class="fix"><pre><code>Encrypt or mask the `bank_account` field before storing it in the database.
+
+Example fix:
+ALTER TABLE kyc_documents ALTER COLUMN bank_account TYPE TEXT USING pgp_sym_encrypt(bank_account, &#39;encryption_key&#39;);</code></pre><button type="button" class="copy" data-copy="Encrypt or mask the `bank_account` field before storing it in the database.
+
+Example fix:
+ALTER TABLE kyc_documents ALTER COLUMN bank_account TYPE TEXT USING pgp_sym_encrypt(bank_account, &#39;encryption_key&#39;);">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:10">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">bank or UPI detail column `kyc_documents.ifsc` has no visible encryption, hashing, or masking</span>
+      <span class="loc">db/001_init.sql:18</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP003</span> <span class="tag">Act s.8(5); Rules r.6</span> No encryption, hashing, masking, or tokenisation is visible for this column. Encrypt it at the field level or store a token, and keep only the last four characters where display is needed.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The `ifsc` field in the `kyc_documents` table stores sensitive financial data (IFSC codes are used for banking transactions), and it is not encrypted, hashed, or masked, violating DPDP Act requirements for high-risk data protection.</p><div class="fix"><pre><code>Apply encryption or masking to the `ifsc` field when storing it in the database. Example:
+
+  18:   ifsc TEXT ENCRYPTED WITH AES-256</code></pre><button type="button" class="copy" data-copy="Apply encryption or masking to the `ifsc` field when storing it in the database. Example:
+
+  18:   ifsc TEXT ENCRYPTED WITH AES-256">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:11">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">health data column `Patient.diagnosis` has no visible encryption, hashing, or masking</span>
+      <span class="loc">prisma/schema.prisma:5</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP003</span> <span class="tag">Act s.8(5); Rules r.6</span> No encryption, hashing, masking, or tokenisation is visible for this column. Encrypt it at the field level or store a token, and keep only the last four characters where display is needed.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The `diagnosis` field in the `Patient` model represents health data, which is considered high-risk personal data under the DPDP Act. It is stored in plaintext without any encryption, hashing, or masking, violating the requirement for visible protection.</p><div class="fix"><pre><code>Apply encryption or masking to the `diagnosis` field before storing it in the database.
+
+Example fix (using Prisma with encryption):
+
+```prisma
+  diagnosis   String  @db.Encrypted
+```</code></pre><button type="button" class="copy" data-copy="Apply encryption or masking to the `diagnosis` field before storing it in the database.
+
+Example fix (using Prisma with encryption):
+
+```prisma
+  diagnosis   String  @db.Encrypted
+```">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:12">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">health data column `Patient.bloodGroup` has no visible encryption, hashing, or masking</span>
+      <span class="loc">prisma/schema.prisma:6</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP003</span> <span class="tag">Act s.8(5); Rules r.6</span> No encryption, hashing, masking, or tokenisation is visible for this column. Encrypt it at the field level or store a token, and keep only the last four characters where display is needed.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The `bloodGroup` field in the `Patient` model represents health data, which is considered high-risk personal data under the DPDP Act. It is not encrypted, hashed, or masked, violating the requirement for visible protection.</p><div class="fix"><pre><code>Apply encryption, hashing, or masking to the `bloodGroup` field before storing it in the database.
+
+Example fix (using Prisma with encryption):
+
+```prisma
+  bloodGroup  String? @db.Encrypted
+```</code></pre><button type="button" class="copy" data-copy="Apply encryption, hashing, or masking to the `bloodGroup` field before storing it in the database.
+
+Example fix (using Prisma with encryption):
+
+```prisma
+  bloodGroup  String? @db.Encrypted
+```">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:13">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">phone number (`phone`) passed to a log call</span>
+      <span class="loc">src/kyc.ts:13</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP002</span> <span class="tag">Act s.8(5); Rules r.6</span> Logs are widely readable and retained for long periods. Mask or drop the field before logging, or log a stable internal ID instead.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The phone number is being logged directly to the console, which violates privacy rules by exposing personal data in logs.</p><div class="fix"><pre><code>Avoid logging personal data like phone numbers. Replace with a masked or anonymized version if logging is required.</code></pre><button type="button" class="copy" data-copy="Avoid logging personal data like phone numbers. Replace with a masked or anonymized version if logging is required.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:14">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">email address (`email`) sent to Segment</span>
+      <span class="loc">src/kyc.ts:15</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP004</span> <span class="tag">Act s.8(2), s.5, s.6</span> Sharing with a processor needs a valid contract, and the purpose must be covered by the notice and consent given to the user. Drop the field, hash it, or confirm the contract and consent cover this use.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The email address is being sent to a third-party analytics service (Segment) without apparent safeguards, which violates DPDP Act provisions regarding handling of personal data.</p><div class="fix"><pre><code>Implement data minimization and obtain user consent before sending personal data to third-party services. If analytics is required, use anonymized identifiers instead of real email addresses.</code></pre><button type="button" class="copy" data-copy="Implement data minimization and obtain user consent before sending personal data to third-party services. If analytics is required, use anonymized identifiers instead of real email addresses.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:14">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">phone number (`phone`) sent to Segment</span>
+      <span class="loc">src/kyc.ts:15</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP004</span> <span class="tag">Act s.8(2), s.5, s.6</span> Sharing with a processor needs a valid contract, and the purpose must be covered by the notice and consent given to the user. Drop the field, hash it, or confirm the contract and consent cover this use.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The phone number is being sent to a third-party analytics service (Segment) without appropriate safeguards, which violates DPDP Act provisions regarding handling of personal data.</p><div class="fix"><pre><code>Either remove the phone field from the analytics event or implement data anonymization before sending it to the third-party service.</code></pre><button type="button" class="copy" data-copy="Either remove the phone field from the analytics event or implement data anonymization before sending it to the third-party service.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="medium" style="--i:14">
+  <details>
+    <summary>
+      <span class="sev sev-medium">medium</span>
+      <span class="msg">email address (`email`) sent to Sentry</span>
+      <span class="loc">src/kyc.ts:21</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP004</span> <span class="tag">Act s.8(2), s.5, s.6</span> Sharing with a processor needs a valid contract, and the purpose must be covered by the notice and consent given to the user. Drop the field, hash it, or confirm the contract and consent cover this use.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The email address is being sent to Sentry, which is a third-party service, and this constitutes personal data processing under the DPDP Act.</p><div class="fix"><pre><code>If Sentry is not required to process personal data, consider removing the email field from the Sentry.setUser call. If Sentry is required, ensure proper legal basis and data minimization are in place.
+
+Fix code line:
+21:   Sentry.setUser({ id: userId, email: &quot;&lt;REDACTED&gt;&quot; });</code></pre><button type="button" class="copy" data-copy="If Sentry is not required to process personal data, consider removing the email field from the Sentry.setUser call. If Sentry is required, ensure proper legal basis and data minimization are in place.
+
+Fix code line:
+21:   Sentry.setUser({ id: userId, email: &quot;&lt;REDACTED&gt;&quot; });">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="low" style="--i:14">
+  <details>
+    <summary>
+      <span class="sev sev-low">low</span>
+      <span class="msg">No delete or anonymise path found for table `kyc_documents` (3 personal data columns)</span>
+      <span class="loc">db/001_init.sql:16</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP005</span> <span class="tag">Act s.8(7), s.12; Rules r.8</span> Personal data must be erased when consent is withdrawn or the purpose is served, and on a valid erasure request. Add a delete or anonymise path for this table, or mark the finding ignored if erasure happens elsewhere.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The `kyc_documents` table contains personal data columns (`passport`, `bank_account`, `ifsc`) but no delete or anonymise path is found, violating DPDP Act requirements for data erasure.</p><div class="fix"><pre><code>Implement a data deletion or anonymisation mechanism for records in the `kyc_documents` table when associated user data is deleted or requested.</code></pre><button type="button" class="copy" data-copy="Implement a data deletion or anonymisation mechanism for records in the `kyc_documents` table when associated user data is deleted or requested.">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+<li class="card" data-severity="low" style="--i:14">
+  <details>
+    <summary>
+      <span class="sev sev-low">low</span>
+      <span class="msg">No delete or anonymise path found for table `Patient` (4 personal data columns)</span>
+      <span class="loc">prisma/schema.prisma:3</span>
+    </summary>
+    <div class="body">
+      <p><span class="tag">DPDP005</span> <span class="tag">Act s.8(7), s.12; Rules r.8</span> Personal data must be erased when consent is withdrawn or the purpose is served, and on a valid erasure request. Add a delete or anonymise path for this table, or mark the finding ignored if erasure happens elsewhere.</p>
+      <p class="ai"><span class="tag ai-true_positive">AI: true positive · 95%</span> The `Patient` model contains personal data fields (`patientName`, `mobile`, `diagnosis`, `bloodGroup`) but lacks any mechanism for deletion or anonymization, violating DPDP Act requirements for data erasure.</p><div class="fix"><pre><code>Add a soft delete flag or implement a data anonymization method for the `Patient` model. Example:
+
+`@map(&quot;is_deleted&quot;) deleted Boolean?`</code></pre><button type="button" class="copy" data-copy="Add a soft delete flag or implement a data anonymization method for the `Patient` model. Example:
+
+`@map(&quot;is_deleted&quot;) deleted Boolean?`">Copy fix</button></div>
+    </div>
+  </details>
+</li>
+  </ul>
+
+  <h2 id="inventory">Personal data inventory</h2>
+  <section class="table">
+  <h3>kyc_documents <span class="tag warn">no erasure path</span></h3>
+  <p class="muted">db/001_init.sql · Purpose (AI inferred): Verification of identity and financial information for KYC compliance · Retention (AI inferred): As long as the individual remains a customer, plus a period necessary for legal or regulatory requirements</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Column</th><th>Category</th><th>Type</th><th>Protection</th></tr></thead>
+    <tbody><tr><td><code>passport</code></td><td>government ID</td><td><code>VARCHAR(8)</code></td><td>none visible</td></tr><tr><td><code>bank_account</code></td><td>bank or UPI detail</td><td><code>VARCHAR(18)</code></td><td>none visible</td></tr><tr><td><code>ifsc</code></td><td>bank or UPI detail</td><td><code>VARCHAR(11)</code></td><td>none visible</td></tr></tbody>
+  </table></div>
+</section>
+<section class="table">
+  <h3>Patient <span class="tag warn">no erasure path</span></h3>
+  <p class="muted">prisma/schema.prisma · Purpose (AI inferred): Medical treatment and health care management · Retention (AI inferred): As long as necessary for the provision of medical care, typically until the patient&#39;s records are no longer required by law or the patient requests their deletion.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Column</th><th>Category</th><th>Type</th><th>Protection</th></tr></thead>
+    <tbody><tr><td><code>patientName</code></td><td>name</td><td><code>String</code></td><td>none visible</td></tr><tr><td><code>mobile</code></td><td>phone number</td><td><code>String</code></td><td>none visible</td></tr><tr><td><code>diagnosis</code></td><td>health data</td><td><code>String</code></td><td>none visible</td></tr><tr><td><code>bloodGroup</code></td><td>health data</td><td><code>String</code></td><td>none visible</td></tr></tbody>
+  </table></div>
+</section>
+<section class="table">
+  <h3>users <span class="tag ok">erasure path found</span></h3>
+  <p class="muted">db/001_init.sql · Purpose (AI inferred): User identification and verification · Retention (AI inferred): As long as the user maintains an account, plus 10 years after account deactivation for legal compliance</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Column</th><th>Category</th><th>Type</th><th>Protection</th></tr></thead>
+    <tbody><tr><td><code>full_name</code></td><td>name</td><td><code>TEXT</code></td><td>none visible</td></tr><tr><td><code>email</code></td><td>email address</td><td><code>TEXT</code></td><td>none visible</td></tr><tr><td><code>phone</code></td><td>phone number</td><td><code>VARCHAR(15)</code></td><td>none visible</td></tr><tr><td><code>aadhaar_number</code></td><td>Aadhaar</td><td><code>VARCHAR(12)</code></td><td>none visible</td></tr><tr><td><code>pan_number_encrypted</code></td><td>PAN</td><td><code>BYTEA</code></td><td>visible</td></tr><tr><td><code>date_of_birth</code></td><td>date of birth</td><td><code>DATE</code></td><td>none visible</td></tr></tbody>
+  </table></div>
+</section>
+  <p class="muted">Third parties receiving personal data: Segment, Sentry.</p>
+  <footer>Generated by dpdp-scan. References point to the DPDP Act, 2023 and DPDP Rules, 2025.</footer>
+</main>
+<div class="sr" aria-live="polite" id="live"></div>
+<script>
+(function () {
+  var live = document.getElementById("live");
+  var chips = [].slice.call(document.querySelectorAll(".chip"));
+  var cards = [].slice.call(document.querySelectorAll(".card"));
+  function filter(key) {
+    chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c.dataset.filter === key)); });
+    var shown = 0;
+    cards.forEach(function (c) { var on = key === "all" || c.dataset.severity === key; c.hidden = !on; if (on) shown++; });
+    live.textContent = shown + " findings shown";
+  }
+  chips.forEach(function (c) { c.addEventListener("click", function () { filter(c.dataset.filter); }); });
+
+  function copy(button) {
+    var text = button.dataset.copy;
+    function done() {
+      button.classList.add("done"); button.textContent = "Copied"; live.textContent = "Fix copied to clipboard";
+      setTimeout(function () { button.classList.remove("done"); button.textContent = "Copy fix"; }, 1600);
+    }
+    function fallback() {
+      var area = document.createElement("textarea"); area.value = text; area.style.position = "fixed"; area.style.opacity = "0";
+      document.body.appendChild(area); area.select();
+      try { document.execCommand("copy"); done(); } catch (e) { live.textContent = "Copy failed"; }
+      area.remove();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  }
+  document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest(".copy"); if (b) copy(b); });
+
+  // #demo: scripted 15 second showcase. Every frame is a function of elapsed time.
+  if (location.hash !== "#demo") return;
+  var counters = [].slice.call(document.querySelectorAll(".stat b"));
+  var firstAi = document.querySelector(".card .fix") ? document.querySelector(".card .fix").closest(".card") : cards[0];
+  var steps = [
+    [0, function () { window.scrollTo(0, 0); filter("all"); cards.forEach(function (c) { c.querySelector("details").open = false; }); }],
+    [3500, function () { filter("high"); }],
+    [5500, function () { if (firstAi) { firstAi.hidden = false; firstAi.querySelector("details").open = true; firstAi.scrollIntoView({ block: "center" }); } }],
+    [8500, function () { var b = firstAi && firstAi.querySelector(".copy"); if (b) { b.classList.add("done"); b.textContent = "Copied"; } }],
+    [10500, function () { var b = firstAi && firstAi.querySelector(".copy"); if (b) { b.classList.remove("done"); b.textContent = "Copy fix"; } document.getElementById("inventory").scrollIntoView({ block: "start" }); }],
+  ];
+  var LOOP = 15000, start = performance.now(), lastStep = -1, lastLap = 0;
+  function frame(now) {
+    var elapsed = now - start, lap = Math.floor(elapsed / LOOP), t = elapsed % LOOP;
+    if (lap !== lastLap) { lastLap = lap; lastStep = -1; }
+    var k = Math.min(1, t / 1600), eased = 1 - Math.pow(1 - k, 3);
+    counters.forEach(function (el) { el.textContent = String(Math.round(Number(el.dataset.count) * eased)); });
+    var step = -1;
+    for (var i = 0; i < steps.length; i++) if (t >= steps[i][0]) step = i;
+    if (step !== lastStep) { for (var j = lastStep + 1; j <= step; j++) steps[j][1](); lastStep = step; }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
